@@ -8,19 +8,26 @@
 
 Вы можете отправлять POST-запросы на эндпоинт /guess-color для угадывания цвета предмета. В запросе необходимо передать JSON-объект с ключом item_number, содержащим номер предмета.
 Пример запроса с использованием PowerShell: 
+
+```
 $uri = "http://localhost:5000/guess-color"
 $body = @{
     "item_number" = 45
 } | ConvertTo-Json
 
-$response = Invoke-WebRequest -Method POST -Uri $uri -Headers @{"Content-Type" = "application/json"} -Body $body
-$responseContent = $response.Content | ConvertFrom-Json
-
-if ($response.StatusCode -eq 200) {
-    Write-Host "Угаданный цвет для предмета $($responseContent.item_number): $($responseContent.color)"
-} else {
-    Write-Host "Ошибка: $($responseContent.error)"
+try {
+    $response = Invoke-WebRequest -Method POST -Uri $uri -Headers @{"Content-Type" = "application/json"} -Body $body -ErrorAction Stop
+    $responseContent = $response.Content | ConvertFrom-Json
+    
+    if ($response.StatusCode -eq 200) {
+        Write-Host "Угаданный цвет для предмета $($responseContent.item_number): $($responseContent.color)"
+    } else {
+        Write-Host "Ошибка: $($responseContent.error)"
+    }
+} catch {
+    Write-Host "Ошибка при выполнении запроса: $($_.Exception.Message)"
 }
+```
 
 ![image](https://github.com/NikSh99/BOenergo_Test2/assets/43999726/31d68c74-f277-46e0-aa25-dab529fe07ca)
 
